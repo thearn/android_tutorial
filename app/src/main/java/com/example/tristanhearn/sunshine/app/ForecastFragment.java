@@ -47,6 +47,8 @@ public class ForecastFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        FetchWeatherTask weather = new FetchWeatherTask();
+        weather.execute("44256");
     }
 
     @Override
