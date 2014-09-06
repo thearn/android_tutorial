@@ -1,9 +1,11 @@
 package com.example.tristanhearn.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -47,8 +49,24 @@ public class ForecastFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    public void updateWeather() {
         FetchWeatherTask weather = new FetchWeatherTask();
-        weather.execute("44256");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = prefs.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+        String tunits = prefs.getString(getString(R.string.pref_temp_key),
+                getString(R.string.pref_temp_default));
+
+        weather.execute(location, tunits);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
     }
 
     @Override
@@ -61,8 +79,7 @@ public class ForecastFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            FetchWeatherTask weather = new FetchWeatherTask();
-            weather.execute("44256");
+            updateWeather();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -125,6 +142,12 @@ public class ForecastFragment extends Fragment {
 
             String format = "json";
             String units = "metric";
+            boolean temp_units = false;
+
+            if (query_data[1].contentEquals("F")) {
+                temp_units = true;
+
+            }
             int numdays = 7;
 
             final String base_url = "http://api.openweathermap.org/data/2.5/forecast/daily?";
@@ -201,7 +224,7 @@ public class ForecastFragment extends Fragment {
             }
             //end connect
 
-        try  {return getWeatherDataFromJson(forecastJsonStr, numdays);}
+        try  {return getWeatherDataFromJson(forecastJsonStr, numdays, temp_units);}
 
         catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
@@ -235,14 +258,17 @@ public class ForecastFragment extends Fragment {
             return highLowStr;
         }
 
-        /**
-         * Take the String representing the complete forecast in JSON Format and
-         * pull out the data we need to construct the Strings needed for the wireframes.
-         *
-         * Fortunately parsing is easy:  constructor takes the JSON string and converts it
-         * into an Object hierarchy for us.
-         */
-        private String[] getWeatherDataFromJson(String forecastJsonStr, int numDays)
+
+        private double t_convert(double temp, boolean fahrenheit) {
+            if (fahrenheit) {
+                temp = 9*temp / 5. + 32.;
+            }
+            return temp;
+        }
+
+
+        private String[] getWeatherDataFromJson(String forecastJsonStr, int numDays,
+                                                boolean temp_units)
                 throws JSONException {
 
             // These are the names of the JSON objects that need to be extracted.
@@ -280,8 +306,8 @@ public class ForecastFragment extends Fragment {
                 // Temperatures are in a child object called "temp".  Try not to name variables
                 // "temp" when working with temperature.  It confuses everybody.
                 JSONObject temperatureObject = dayForecast.getJSONObject(OWM_TEMPERATURE);
-                double high = temperatureObject.getDouble(OWM_MAX);
-                double low = temperatureObject.getDouble(OWM_MIN);
+                double high = t_convert(temperatureObject.getDouble(OWM_MAX), temp_units);
+                double low = t_convert(temperatureObject.getDouble(OWM_MIN), temp_units);
 
                 highAndLow = formatHighLows(high, low);
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;

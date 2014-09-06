@@ -7,4 +7,17 @@
     <string name="action_refresh">Refresh</string>
     <string name="title_activity_detail">DetailActivity</string>
 
+    <!-- Label for the location preference [CHAR LIMIT=30] -->
+    <string name="pref_location_label">Location</string>
+
+    <!-- Key name for storing location in SharedPreferences [CHAR LIMIT=NONE] -->
+    <string name="pref_location_key" translatable="false">location</string>
+
+    <!-- Default postal code for location preference [CHAR LIMIT=NONE] -->
+    <string name="pref_location_default" translatable="false">44256</string>
+
+    <string name="pref_temp_summary" translatable="false">Sets the temperature units</string>
+    <string name="pref_temp_label" translatable="false">Temp. Units</string>
+    <string name="pref_temp_key" translatable="false">temp</string>
+    <string name="pref_temp_default" translatable="false">F</string>
 </resources>

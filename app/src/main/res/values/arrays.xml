@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="temp_choices">
+        <item name="Fahrenheit">F</item>
+        <item name="Celcius">C</item>
+    </string-array>
+    <string-array name="temp_values">
+        <item name="F">F</item>
+        <item name="C">C</item>
+    </string-array>
+</resources>
