@@ -20,4 +20,7 @@
     <string name="pref_temp_label" translatable="false">Temp. Units</string>
     <string name="pref_temp_key" translatable="false">temp</string>
     <string name="pref_temp_default" translatable="false">F</string>
+
+
+    <string name="action_share">Share</string>
 </resources>
